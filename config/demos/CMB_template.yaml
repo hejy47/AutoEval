@@ -1,0 +1,17 @@
+run: 
+    mode: autoline
+save: 
+    en: True
+    pub: 
+        prefix: demo_CMB
+        subdir: test
+gpt: 
+    model: 4t
+autoline: 
+    probset:
+        name: HDLBits
+        path: data/HDLBits/HDLBits_data.jsonl
+        mutant_path: data/HDLBits/HDLBits_data_mutants.jsonl
+        only: ["conditional"]
+    promptscript: pychecker
+    timeout: 40
