@@ -12,6 +12,5 @@ autoline:
         name: HDLBits
         path: data/HDLBits/HDLBits_data.jsonl
         mutant_path: data/HDLBits/HDLBits_data_mutants.jsonl
-        only: ["fsm3"]
     promptscript: pychecker
     timeout: 40

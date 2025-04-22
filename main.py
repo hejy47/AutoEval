@@ -34,6 +34,9 @@ def main():
         task_id = probdata_single["task_id"]
         logger_util.logger.info("############ task {} [{}] ############".format(idx+1, task_id))
         task_dir = os.path.join(problem_config.save.root, task_id)
+        if not os.path.exists(task_dir):
+            logger_util.logger.error("Task {} directory does not exist, skip\n".format(task_id))
+            continue
         TB_code_v = file_util.read_file_to_str(os.path.join(task_dir, "TBgen_codes", "{}_tb.v".format(task_id)))
         TB_code_py = file_util.read_file_to_str(os.path.join(task_dir, "TBgen_codes", "{}_tb.py".format(task_id)))
         evaluator = TaskTBeval(
