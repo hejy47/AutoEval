@@ -48,6 +48,10 @@ class TaskTBeval():
         self.TB_gen_mode = "TB_gen" if not self.pychecker_en else "Pychecker"
         self.pychecker_code = pychecker_code
         self.working_dir = ""
+        # Eval0 related
+        self.Eval0_iv_pass = True
+        self.Eval0_pass = False
+        self.Eval0_exist = True
         # Eval1 related
         self.Eval1_exist = False
         # self.Eval1_dir = task_dir + "eval1_GoldenRTL/"
@@ -71,9 +75,13 @@ class TaskTBeval():
 
     # @log_localprefix("TBeval")
     def run(self):
+        # Eval 0
+        self.run_Eval0()
         # Eval 1
-        if self.DUT_golden is not None:
+        if self.Eval0_pass and self.DUT_golden is not None:
             self.run_Eval1()
+        else:
+            logger.info("[%s] Eval 1 is skipped because Eval 0 failed" % (self.task_id)) 
         if self.Eval1_pass:
             # Eval 2
             if self.TB_golden is not None and self.DUT_mutant_list is not None:
@@ -84,6 +92,19 @@ class TaskTBeval():
         else:
             logger.info("[%s] Eval 2/2b is skipped because Eval 1 failed" % (self.task_id)) 
         self.clean_wave_vcd() # some golden TBs may generate wave.vcd files
+    
+    def run_Eval0(self):
+        silent = True
+        ### Eval 0: Golden RTL checking
+        logger.info("[%s] Eval 0: Golden RTL checking begins" % (self.task_id))
+        self.Eval0_pass = True
+        try:
+            self.run_testbench(self.Eval1_dir, self.TB_gen, self.DUT_golden, self.TB_gen_mode, self.pychecker_code, raise_when_fail=True, save_en=self.save_en)
+        except Exception as e:
+            if "Compilation Failed" in str(e):
+                if "Iverilog Compilation Failed" in str(e):
+                    self.Eval0_iv_pass = False
+                self.Eval0_pass = False
     
     def run_Eval1(self):
         silent = True
